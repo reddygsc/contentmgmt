@@ -92,7 +92,7 @@ function renderStatus(statusText) {
   document.getElementById('status').textContent = statusText;
 }
 
-function postToREST()
+function postToREST(url,temp)
 {
 	 var x = new XMLHttpRequest();
   //x.open('GET', url);
@@ -116,7 +116,29 @@ function postToREST()
   //x.send();
   x.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
   
-  x.send(JSON.stringify({"webpage":"http://wwww.test12345.com","numbers":["09876543431","1234567890"]}));
+  x.send(JSON.stringify({"webpage":url,"numbers":temp}));
+}
+
+function getNumbers(pattern,response){
+
+/* var patt = new RegExp(
+                "\\d{3} \\d{3} \\d{4}",
+                "g"
+            ); */
+			
+			var patt = new RegExp(
+                pattern,
+                "g"
+            );
+    var temp = '';
+	var i=0;
+    while (match = patt.exec(response)) {
+        if(i!=0)
+			temp=","+ temp;
+		temp = temp + match[0] ;
+		i++;
+    }	
+	return temp;
 }
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -139,8 +161,21 @@ document.addEventListener('DOMContentLoaded', function() {
 	//var phonenum=response.match(^(\([0-9]{3}\)|[0-9]{3}-)[0-9]{3}-[0-9]{4}$);
 	//renderStatus('Response Stackoverflow : ' + phonenum);
 	
+	/*var patt = new RegExp(
+                "\\+?\\(?\\d*\\)? ?\\(?\\d+\\)?\\d*([\\s./-]\\d{2,})+",
+                "g"
+            );*/
+    
+	
+			var temp=getNumbers("\\d{3} \\d{3} \\d{4}",response);
+			var temp1=getNumbers("\\d{3}-\\d{3}-\\d{4}",response);
+			
+			var numArray = new Array(temp,temp1);
+			
+	renderStatus(url,numArray);
+	
 	//POST Data
-	postToREST();
+	postToREST(url,numArray);
     
   };
   xhttp.onerror = function() {
@@ -149,9 +184,7 @@ document.addEventListener('DOMContentLoaded', function() {
   //x.send();
   //xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
   
-  xhttp.send();
-  
-	
+  xhttp.send();	
     
   });
 });
